@@ -5,7 +5,7 @@ from chemview import MolecularViewer
 from chemview.utils import get_atom_color
 
 
-def quick_view(structure, bonds=True, conventional=True, transform=[1, 1, 1], show_box=True, bond_tol=0.2):
+def quick_view(structure, bonds=True, conventional=True, transform=None, show_box=True, bond_tol=0.2, stick_radius=0.1):
     """
     :param structure: (pymatgen Structure)
     :param bonds: (bool) visualize bonds
@@ -13,13 +13,17 @@ def quick_view(structure, bonds=True, conventional=True, transform=[1, 1, 1], sh
     :param transform: (list) can be used to make supercells with (see pymatgen.Structure.make_supercell method)
     :param show_box: (true) unit cell is shown
     :param bond_tol: (float) used if bonds=True. Sets an extra distance tolerance when finding bonds.
+    :param stick_radius: (float) radius of bonds.
+
     :return:
         A chemview MolecularViewer widget
     """
 
     if conventional:
         structure = SpacegroupAnalyzer(structure).get_conventional_standard_structure()
-    structure.make_supercell(transform)
+
+    if transform:
+        structure.make_supercell(transform)
     atom_types = [i.symbol for i in structure.species]
 
     if bonds:
@@ -36,7 +40,7 @@ def quick_view(structure, bonds=True, conventional=True, transform=[1, 1, 1], sh
     mv = MolecularViewer(structure.cart_coords, topology={'atom_types': atom_types, 'bonds': bonds})
 
     if bonds:
-        mv.ball_and_sticks(stick_radius=0.2)
+        mv.ball_and_sticks(stick_radius=stick_radius)
     for i in structure.sites:
         el = i.specie.symbol
         coord = i.coords
