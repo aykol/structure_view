@@ -33,7 +33,7 @@ def quick_view(structure, bonds=True, conventional=True, transform=None, show_bo
             for j in range(i + 1, structure.num_sites):
                 sym_j = structure[j].specie.symbol
                 max_d = CovalentRadius.radius[sym_i] + CovalentRadius.radius[sym_j] + bond_tol
-                if structure.get_distance(i, j, 0) < max_d:
+                if structure.get_distance(i, j, np.array([0,0,0])) < max_d:
                     bonds.append((i, j))
     bonds = bonds if bonds else None
 
