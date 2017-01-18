@@ -18,30 +18,30 @@ def quick_view(structure, bonds=True, conventional=True, transform=None, show_bo
     :return:
         A chemview MolecularViewer widget
     """
-
+    s = structure.copy()
     if conventional:
-        structure = SpacegroupAnalyzer(structure).get_conventional_standard_structure()
+        s = SpacegroupAnalyzer(s).get_conventional_standard_structure()
 
     if transform:
-        structure.make_supercell(transform)
-    atom_types = [i.symbol for i in structure.species]
+        s.make_supercell(transform)
+    atom_types = [i.symbol for i in s.species]
 
     if bonds:
         bonds = []
-        for i in range(structure.num_sites - 1):
-            sym_i = structure[i].specie.symbol
-            for j in range(i + 1, structure.num_sites):
-                sym_j = structure[j].specie.symbol
+        for i in range(s.num_sites - 1):
+            sym_i = s[i].specie.symbol
+            for j in range(i + 1, s.num_sites):
+                sym_j = s[j].specie.symbol
                 max_d = CovalentRadius.radius[sym_i] + CovalentRadius.radius[sym_j] + bond_tol
-                if structure.get_distance(i, j, np.array([0,0,0])) < max_d:
+                if s.get_distance(i, j, np.array([0,0,0])) < max_d:
                     bonds.append((i, j))
     bonds = bonds if bonds else None
 
-    mv = MolecularViewer(structure.cart_coords, topology={'atom_types': atom_types, 'bonds': bonds})
+    mv = MolecularViewer(s.cart_coords, topology={'atom_types': atom_types, 'bonds': bonds})
 
     if bonds:
         mv.ball_and_sticks(stick_radius=stick_radius)
-    for i in structure.sites:
+    for i in s.sites:
         el = i.specie.symbol
         coord = i.coords
         r = CovalentRadius.radius[el]
@@ -51,7 +51,7 @@ def quick_view(structure, bonds=True, conventional=True, transform=None, show_bo
                                           'opacity': 1.0})
     if show_box:
         o = np.array([0, 0, 0])
-        a, b, c = structure.lattice.matrix[0], structure.lattice.matrix[1], structure.lattice.matrix[2]
+        a, b, c = s.lattice.matrix[0], s.lattice.matrix[1], s.lattice.matrix[2]
         starts = [o, o, o, a, a, b, b, c, c, a + b, a + c, b + c]
         ends = [a, b, c, a + b, a + c, b + a, b + c, c + a, c + b, a + b + c, a + b + c, a + b + c]
         colors = [0xffffff for i in range(12)]
