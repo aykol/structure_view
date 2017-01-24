@@ -5,7 +5,7 @@ from chemview import MolecularViewer
 from chemview.utils import get_atom_color
 
 
-def quick_view(structure, bonds=True, conventional=True, transform=None, show_box=True, bond_tol=0.2, stick_radius=0.1):
+def quick_view(structure, bonds=True, conventional=False, transform=None, show_box=True, bond_tol=0.2, stick_radius=0.1):
     """
     :param structure: (pymatgen Structure)
     :param bonds: (bool) visualize bonds
